@@ -3,6 +3,11 @@ import pandas as pd
 import openpyxl
 
 
+def data_cleaner(arg: any):
+    if arg is None:
+        return 'x'
+    return arg
+
 def data_access():
 
     print('reading from data_access')
@@ -14,17 +19,36 @@ def data_access():
 
     # Itera sobre cada fila y la imprime en la consola
     for row in sheet.iter_rows(min_row=3, values_only=True):
-        print(row)
+        # Omitir las filas vacías
+        if not any(row):
+            continue
+
+        # pintar valores en el documento
+        ticket_builder(
+            num=data_cleaner(row[1],),
+            names=data_cleaner(row[2]),
+            last_names=data_cleaner(row[3]),
+            father=data_cleaner(row[4]),
+            mother=data_cleaner(row[5]),
+            born_date=data_cleaner(row[6]),
+            born_place=data_cleaner(row[7]),
+            baptism_date=data_cleaner(row[8]),
+            baptism_place=data_cleaner(row[9]),
+            godfather=data_cleaner(row[10]),
+            godmother=data_cleaner(row[11]),
+            minister=data_cleaner(row[12])
+        )
+        # print('-------------------------------------------------------------------------------\n')
 
     # Cierra el archivo de Excel
     workbook.close()
 
-
-print('hello world')
-
-
 def ticket_builder(num=0, names='', last_names='', born_date='', born_place='', baptism_date='', baptism_place='', godfather='', godmother='s', mother='', father='', y=10, minister='', hijo='Primero'):
     print('building...')
+
+    pdf.add_page()
+
+    # Cleaning data...
 
     complete_name = names.split(' ')
     complete_last_name = last_names.split(' ')
@@ -47,7 +71,7 @@ def ticket_builder(num=0, names='', last_names='', born_date='', born_place='', 
 
     complete_name_str = names + ' ' + last_names
 
-# region first block
+    # region first block
 
     pdf.rect(x=5, y=y, w=200, h=115)
     # pdf.rect(x=5, y=105, w=200, h=90)
@@ -93,9 +117,9 @@ def ticket_builder(num=0, names='', last_names='', born_date='', born_place='', 
     pdf.cell(w=75, h=12, txt='', align='C', border='0')
     pdf.multi_cell(w=115, h=6, txt=complete_name_str, align='C', border='B')
 
-# endregion
+    # endregion
 
-# region second block
+    # region second block
     pdf.cell(
         w=65, h=6, txt='Recibió la primera comunión en la', align='L', border='0')
     # 2
@@ -129,9 +153,9 @@ def ticket_builder(num=0, names='', last_names='', born_date='', born_place='', 
     pdf.multi_cell(w=105, h=6, txt=father, align='L', border='B')
     pdf.multi_cell(w=20, h=12, txt='', align='L', border='0')
 
-# endregion
+    # endregion
 
-# region third block
+    # region third block
     pdf.cell(w=65, h=6, txt='Contrajo matrimonio en la',
              align='L', border='T')
     # 2
@@ -162,30 +186,20 @@ def ticket_builder(num=0, names='', last_names='', born_date='', born_place='', 
     pdf.multi_cell(w=55, h=6, txt='', align='L', border='B')
     pdf.multi_cell(w=55, h=20, txt='', align='L', border='0')
 
-
-# endregion
-
-def read_excel_data(file_path=''):
-    print('Reading excel data...')
-    data = pd.x(file_path=file_path, header=3, sheet_name=1)
-    print(data)
-
+    # endregion
 
 pdf = FPDF(orientation='P', unit='mm', format='A4')
 
-pdf.add_page()
-
 pdf.set_font('Arial', '', 10)
 
-ticket_builder(names='Brandon Isaac', last_names='Fonseca', baptism_date='18/12/2003',
-               baptism_place='La Palma', born_date='09/01/99', born_place='Juigalpa',
-               godfather='Nelson Oteron', godmother='Martha Cabrera', father='No se sabe',
-               mother='Nuvia Fonseca', num=1, minister='Rayan')
-ticket_builder(y=143)
-pdf.add_page()
-ticket_builder()
+# ticket_builder(names='Brandon Isaac', last_names='Fonseca', baptism_date='18/12/2003',
+#                baptism_place='La Palma', born_date='09/01/99', born_place='Juigalpa',
+#                godfather='Nelson Oteron', godmother='Martha Cabrera', father='No se sabe',
+#                mother='Nuvia Fonseca', num=1, minister='Rayan')
+# ticket_builder(y=143)
+# pdf.add_page()
+# ticket_builder()
 
 
-pdf.output('./report/fichas.pdf')
-# read_excel_data('../fichas-Macro.xlsm')
 data_access()
+pdf.output('./report/fichas.pdf')
