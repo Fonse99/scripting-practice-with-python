@@ -187,4 +187,5 @@ ticket_builder()
 
 
 pdf.output('./report/fichas.pdf')
-read_excel_data('../fichas-Macro.xlsm')
+# read_excel_data('../fichas-Macro.xlsm')
+data_access()
