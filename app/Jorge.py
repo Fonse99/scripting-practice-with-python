@@ -11,17 +11,23 @@ def data_cleaner(arg: any):
 def data_access():
 
     print('reading from data_access')
-
     workbook = openpyxl.load_workbook('../fichas-Macro.xlsm')
 
     # Selecciona la hoja de trabajo que contiene los datos
     sheet = workbook['DATOS-indice 2018']
 
+    # establecemos el valor de y en 10 para establecer la distancia de la primera ficha
+    y = 10;
+
     # Itera sobre cada fila y la imprime en la consola
-    for row in sheet.iter_rows(min_row=3, values_only=True):
+    for index, row in enumerate(sheet.iter_rows(min_row=3, values_only=True)):
         # Omitir las filas vacías
         if not any(row):
             continue
+        
+        if(index % 2 == 0):
+            pdf.add_page()
+            y=10; #reiniciamos el valor al por defecto en cada nueva página
 
         # pintar valores en el documento
         ticket_builder(
@@ -36,8 +42,12 @@ def data_access():
             baptism_place=data_cleaner(row[9]),
             godfather=data_cleaner(row[10]),
             godmother=data_cleaner(row[11]),
-            minister=data_cleaner(row[12])
+            minister=data_cleaner(row[12]),
+            y=y
         )
+
+        # Después de la primera ficha incrementamos y sumamos el tamaño de la ficha
+        y += 140
         # print('-------------------------------------------------------------------------------\n')
 
     # Cierra el archivo de Excel
@@ -45,8 +55,6 @@ def data_access():
 
 def ticket_builder(num=0, names='', last_names='', born_date='', born_place='', baptism_date='', baptism_place='', godfather='', godmother='s', mother='', father='', y=10, minister='', hijo='Primero'):
     print('building...')
-
-    pdf.add_page()
 
     # Cleaning data...
 
@@ -73,7 +81,7 @@ def ticket_builder(num=0, names='', last_names='', born_date='', born_place='', 
 
     # region first block
 
-    pdf.rect(x=5, y=y, w=200, h=115)
+    pdf.rect(x=5, y=y, w=200, h=120)
     # pdf.rect(x=5, y=105, w=200, h=90)
     # pdf.rect(x=5, y=200, w=200, h=90)
 
@@ -200,6 +208,8 @@ pdf.set_font('Arial', '', 10)
 # pdf.add_page()
 # ticket_builder()
 
+# pdf.add_page()
 
 data_access()
+
 pdf.output('./report/fichas.pdf')
